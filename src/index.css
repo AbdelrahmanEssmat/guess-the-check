@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #00B894;
+  --color-primary-light: #55EFC4;
+  --color-primary-dim: rgba(0, 184, 148, 0.12);
+  --color-secondary: #4ECDC4;
+  --color-secondary-dim: rgba(78, 205, 196, 0.12);
+  --color-accent: #FFE66D;
+  --color-cta: #4A90D9;
+  --color-bg: #FFF9F5;
+  --color-bg-card: #FFFFFF;
+  --color-bg-card-elevated: #FFF3EB;
+  --color-text-primary: #2D3436;
+  --color-text-secondary: #636E72;
+  --color-text-muted: #B2BEC3;
+  --color-error: #E74C3C;
+  --color-error-dim: rgba(231, 76, 60, 0.08);
+  --color-success: #00B894;
+  --color-success-dim: rgba(0, 184, 148, 0.10);
+  --color-purple: #A29BFE;
+  --color-purple-dim: rgba(162, 155, 254, 0.15);
+  --color-border: rgba(0, 0, 0, 0.06);
+  --color-separator: rgba(0, 0, 0, 0.05);
+
+  --font-nunito: 'Nunito', sans-serif;
+}
+
+body {
+  font-family: var(--font-nunito);
+  background-color: #FFF9F5;
+  color: #2D3436;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
