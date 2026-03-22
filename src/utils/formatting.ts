@@ -37,3 +37,22 @@ export function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2);
 }
+
+export function formatShareText(
+  session: { restaurantName?: string },
+  summaries: { person: { name: string }; total: number }[],
+  grandTotal: number
+): string {
+  const header = session.restaurantName
+    ? `🧾 Guess The Check — ${session.restaurantName}`
+    : '🧾 Guess The Check';
+
+  const personLines = summaries
+    .map((s) => `👤 ${s.person.name}: ${formatEGP(s.total)}`)
+    .join('\n');
+
+  const separator = '━━━━━━━━━━━━━━━';
+  const totalLine = `💰 Total: ${formatEGP(grandTotal)}`;
+
+  return `${header}\n\n${personLines}\n${separator}\n${totalLine}`;
+}
