@@ -75,8 +75,8 @@ export default function HistoryDetail() {
 
         {showBanner && (
           <ValidationBanner
-            validation={validation!}
-            receiptTotal={session.receiptTotal!}
+            isValid={validation!.isValid}
+            difference={validation!.difference}
           />
         )}
       </div>
