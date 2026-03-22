@@ -1,16 +1,22 @@
+import { useState } from 'react';
 import { PersonSummary } from '../types';
-import { formatEGP, getInitials } from '../utils/formatting';
+import { formatEGP, formatPersonShareText, getInitials } from '../utils/formatting';
+import ShareModal from './ShareModal';
 
 interface PersonCardProps {
   summary: PersonSummary;
+  restaurantName?: string;
 }
 
-export default function PersonCard({ summary }: PersonCardProps) {
+export default function PersonCard({ summary, restaurantName }: PersonCardProps) {
   const { person, subtotal, taxAmount, serviceAmount, tipAmount, total, items } = summary;
+  const [showShare, setShowShare] = useState(false);
+
+  const shareText = formatPersonShareText(summary, restaurantName);
 
   return (
     <div className="bg-bg-card rounded-2xl p-5 shadow-sm">
-      {/* Header: Avatar + Name */}
+      {/* Header: Avatar + Name + Share */}
       <div className="flex items-center gap-3 mb-4">
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
@@ -20,10 +26,23 @@ export default function PersonCard({ summary }: PersonCardProps) {
             {getInitials(person.name)}
           </span>
         </div>
-        <span className="text-lg font-nunito font-bold text-text-primary">
+        <span className="text-lg font-nunito font-bold text-text-primary flex-1">
           {person.name}
         </span>
+        <button
+          onClick={() => setShowShare(true)}
+          className="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text-secondary hover:bg-bg-card-elevated transition-colors"
+          aria-label={`Share ${person.name}'s receipt`}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+            <polyline points="16 6 12 2 8 6" />
+            <line x1="12" y1="2" x2="12" y2="15" />
+          </svg>
+        </button>
       </div>
+
+      <ShareModal visible={showShare} onClose={() => setShowShare(false)} shareText={shareText} />
 
       {/* Items list */}
       <div className="flex flex-col">
