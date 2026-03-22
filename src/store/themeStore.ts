@@ -19,7 +19,7 @@ function getStoredMode(): ThemeMode {
   } catch {
     // localStorage unavailable
   }
-  return 'system';
+  return 'light';
 }
 
 export const useThemeStore = create<ThemeState>((set) => ({

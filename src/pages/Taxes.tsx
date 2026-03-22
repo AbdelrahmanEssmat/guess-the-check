@@ -26,8 +26,6 @@ export default function Taxes() {
   const tipAmount = getChargeAmount(tip, groupSubtotal);
   const estimatedTotal = groupSubtotal + taxAmount + serviceAmount + tipAmount;
 
-  const tipPresets = [5, 10, 15, 20];
-
   return (
     <div className="min-h-dvh bg-bg flex flex-col font-nunito">
       <div className="px-6 pt-6">
@@ -57,21 +55,6 @@ export default function Taxes() {
 
         {/* Tip input */}
         <div className="mt-4">
-          <div className="flex gap-2 mb-2">
-            {tipPresets.map((preset) => (
-              <button
-                key={preset}
-                onClick={() => setTip({ type: 'percentage', value: preset })}
-                className={`flex-1 py-1.5 rounded-full text-sm font-nunito font-semibold transition-colors ${
-                  tip.type === 'percentage' && tip.value === preset
-                    ? 'bg-primary text-white'
-                    : 'bg-bg-card text-text-secondary border border-border'
-                }`}
-              >
-                {preset}%
-              </button>
-            ))}
-          </div>
           <TaxServiceInput
             label="Tip"
             config={tip}
