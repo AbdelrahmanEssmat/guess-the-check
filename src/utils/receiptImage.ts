@@ -178,7 +178,7 @@ export async function generateReceiptImage(
   ctx.fillStyle = '#B2BEC3';
   ctx.font = '500 14px Nunito, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('Guess The Check', CANVAS_WIDTH / 2, y + 12);
+  ctx.fillText('Made by Guess The Check', CANVAS_WIDTH / 2, canvasHeight - PADDING / 2);
 
   // Convert to blob
   return new Promise<Blob | null>((resolve) =>
