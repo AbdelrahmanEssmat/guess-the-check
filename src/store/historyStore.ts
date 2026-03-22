@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Session } from '../types';
+import { useFavoritesStore } from './favoritesStore';
 
 const STORAGE_KEY = 'guess-the-check-history';
 const MAX_HISTORY = 100;
@@ -52,6 +53,10 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
       set({ sessions: updated });
     } catch {
       // Storage write failed
+    }
+    // Update favorites from this session's people
+    if (session.people.length > 0) {
+      useFavoritesStore.getState().addFromSession(session.people);
     }
   },
 

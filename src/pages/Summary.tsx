@@ -11,7 +11,8 @@ import {
   getGrandTotal,
   validateAgainstReceipt,
 } from '../utils/calculations';
-import { formatEGP } from '../utils/formatting';
+import ShareModal from '../components/ShareModal';
+import { formatEGP, formatShareText } from '../utils/formatting';
 
 export default function Summary() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function Summary() {
 
   const [receiptInput, setReceiptInput] = useState('');
   const [showReconcile, setShowReconcile] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
   // Guard: redirect if < 2 people
   useEffect(() => {
@@ -33,9 +35,11 @@ export default function Summary() {
   const summaries = calculatePersonSummaries(
     session.people,
     session.tax,
-    session.service
+    session.service,
+    session.tip ?? { type: 'percentage', value: 0 }
   );
   const grandTotal = getGrandTotal(summaries);
+  const shareText = formatShareText(session, summaries, grandTotal);
 
   const receiptTotal = receiptInput ? parseFloat(receiptInput) : 0;
   const validation =
@@ -84,6 +88,19 @@ export default function Summary() {
             {formatEGP(grandTotal)}
           </span>
         </div>
+
+        {/* Share button */}
+        <button
+          onClick={() => setShowShare(true)}
+          className="w-full flex items-center justify-center gap-2 bg-bg-card border border-border rounded-2xl py-3.5 mt-4 active:scale-[0.98] transition-transform"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text-secondary">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+            <polyline points="16 6 12 2 8 6" />
+            <line x1="12" y1="2" x2="12" y2="15" />
+          </svg>
+          <span className="text-text-primary font-semibold text-base">Share Split</span>
+        </button>
 
         {/* Verify with receipt */}
         <div className="bg-bg-card rounded-2xl p-5 shadow-sm mt-5">
@@ -134,6 +151,13 @@ export default function Summary() {
       <ReconcileModal
         visible={showReconcile}
         onClose={() => setShowReconcile(false)}
+      />
+
+      {/* Share Modal */}
+      <ShareModal
+        visible={showShare}
+        onClose={() => setShowShare(false)}
+        shareText={shareText}
       />
     </div>
   );

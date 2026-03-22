@@ -9,15 +9,17 @@ import { formatEGP } from '../utils/formatting';
 
 export default function Orders() {
   const navigate = useNavigate();
-  const { session, addItem, removeItem } = useSessionStore();
+  const { session, isQuickSplit, addItem, removeItem } = useSessionStore();
   const [selectedPersonId, setSelectedPersonId] = useState<string>('');
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     if (session.people.length < 2) {
       navigate('/split/people', { replace: true });
+    } else if (isQuickSplit) {
+      navigate('/split/taxes', { replace: true });
     }
-  }, [session.people.length, navigate]);
+  }, [session.people.length, isQuickSplit, navigate]);
 
   const selectedPerson = session.people.find((p) => p.id === selectedPersonId);
   const subtotal = selectedPerson ? getPersonSubtotal(selectedPerson) : 0;

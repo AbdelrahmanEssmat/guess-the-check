@@ -13,7 +13,8 @@ export default function ReconcileModal({ visible, onClose }: ReconcileModalProps
   const { session, addItem } = useSessionStore();
   const { people, tax, service, receiptTotal } = session;
 
-  const summaries = calculatePersonSummaries(people, tax, service);
+  const tip = session.tip ?? { type: 'percentage' as const, value: 0 };
+  const summaries = calculatePersonSummaries(people, tax, service, tip);
   const grandTotal = getGrandTotal(summaries);
   const difference = receiptTotal !== undefined ? receiptTotal - grandTotal : 0;
   const isResolved = Math.abs(difference) <= 0.99;

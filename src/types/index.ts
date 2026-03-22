@@ -5,6 +5,7 @@ export interface Session {
   people: Person[];
   tax: ChargeConfig;
   service: ChargeConfig;
+  tip?: ChargeConfig;
   receiptTotal?: number;
 }
 
@@ -32,6 +33,7 @@ export interface PersonSummary {
   subtotal: number;
   taxAmount: number;
   serviceAmount: number;
+  tipAmount: number;
   total: number;
   items: { name: string; amount: number }[];
 }

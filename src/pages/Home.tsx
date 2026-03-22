@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useHistoryStore } from '../store/historyStore';
 import { useSessionStore } from '../store/sessionStore';
 import SwipeableHistoryCard from '../components/SwipeableHistoryCard';
+import ThemeToggle from '../components/ThemeToggle';
 import { Session } from '../types';
 
 export default function Home() {
@@ -22,7 +23,11 @@ export default function Home() {
 
   return (
     <div className="min-h-dvh bg-bg flex flex-col font-nunito">
-      <div className="px-6 pt-12 pb-8 flex flex-col items-center">
+      <div className="px-6 pt-6 flex justify-end">
+        <ThemeToggle />
+      </div>
+
+      <div className="px-6 pb-8 flex flex-col items-center">
         <motion.h1
           className="text-[#4A90D9] font-nunito font-black text-3xl text-center"
           initial={{ opacity: 0, y: -20 }}

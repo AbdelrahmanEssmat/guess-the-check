@@ -8,7 +8,8 @@ import { formatEGP } from '../utils/formatting';
 
 export default function Taxes() {
   const navigate = useNavigate();
-  const { session, setTax, setService } = useSessionStore();
+  const { session, setTax, setService, setTip } = useSessionStore();
+  const tip = session.tip ?? { type: 'percentage' as const, value: 0 };
 
   // Guard: redirect if < 2 people
   useEffect(() => {
@@ -22,7 +23,10 @@ export default function Taxes() {
   const groupSubtotal = getGroupSubtotal(session.people);
   const taxAmount = getChargeAmount(session.tax, groupSubtotal);
   const serviceAmount = getChargeAmount(session.service, groupSubtotal);
-  const estimatedTotal = groupSubtotal + taxAmount + serviceAmount;
+  const tipAmount = getChargeAmount(tip, groupSubtotal);
+  const estimatedTotal = groupSubtotal + taxAmount + serviceAmount + tipAmount;
+
+  const tipPresets = [5, 10, 15, 20];
 
   return (
     <div className="min-h-dvh bg-bg flex flex-col font-nunito">
@@ -51,6 +55,30 @@ export default function Taxes() {
           />
         </div>
 
+        {/* Tip input */}
+        <div className="mt-4">
+          <div className="flex gap-2 mb-2">
+            {tipPresets.map((preset) => (
+              <button
+                key={preset}
+                onClick={() => setTip({ type: 'percentage', value: preset })}
+                className={`flex-1 py-1.5 rounded-full text-sm font-nunito font-semibold transition-colors ${
+                  tip.type === 'percentage' && tip.value === preset
+                    ? 'bg-primary text-white'
+                    : 'bg-bg-card text-text-secondary border border-border'
+                }`}
+              >
+                {preset}%
+              </button>
+            ))}
+          </div>
+          <TaxServiceInput
+            label="Tip"
+            config={tip}
+            onChange={setTip}
+          />
+        </div>
+
         {/* Live Preview */}
         <div className="bg-bg-card rounded-2xl p-5 shadow-sm mt-6">
           <div className="flex justify-between items-center mb-3">
@@ -69,6 +97,12 @@ export default function Taxes() {
             <span className="text-text-secondary text-sm">Service</span>
             <span className="text-text-primary font-semibold">
               {formatEGP(serviceAmount)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-text-secondary text-sm">Tip</span>
+            <span className="text-text-primary font-semibold">
+              {formatEGP(tipAmount)}
             </span>
           </div>
           <div className="border-t border-separator my-3" />

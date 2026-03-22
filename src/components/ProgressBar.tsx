@@ -34,7 +34,7 @@ export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProp
                       ? 'bg-[#4A90D9] text-white shadow-sm'
                       : isActive
                         ? 'bg-[#4A90D9] text-white shadow-md'
-                        : 'bg-white text-text-muted border-2 border-[#E8E8E8]'
+                        : 'bg-white dark:bg-bg-card text-text-muted border-2 border-[#E8E8E8] dark:border-border'
                   }`}
                   initial={false}
                   animate={{
@@ -65,7 +65,7 @@ export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProp
 
               {/* Connector line */}
               {index < steps.length - 1 && (
-                <div className="flex-1 h-[3px] mx-1.5 rounded-full bg-[#E8E8E8] overflow-hidden self-start mt-5">
+                <div className="flex-1 h-[3px] mx-1.5 rounded-full bg-[#E8E8E8] dark:bg-[rgba(255,255,255,0.1)] overflow-hidden self-start mt-5">
                   <motion.div
                     className="h-full bg-[#4A90D9] rounded-full"
                     initial={{ width: '0%' }}
