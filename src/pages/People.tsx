@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionStore } from '../store/sessionStore';
+import { useFavoritesStore } from '../store/favoritesStore';
 import ProgressBar from '../components/ProgressBar';
 import PersonChip from '../components/PersonChip';
+import FavoriteChips from '../components/FavoriteChips';
 
 export default function People() {
   const navigate = useNavigate();
@@ -13,7 +15,21 @@ export default function People() {
     removePerson,
   } = useSessionStore();
 
+  const { favorites, loadFavorites, removeFavorite } = useFavoritesStore();
   const [personName, setPersonName] = useState('');
+
+  useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
+
+  const availableFavorites = useMemo(() => {
+    const sessionNames = new Set(
+      session.people.map((p) => p.name.toLowerCase())
+    );
+    return favorites
+      .filter((f) => !sessionNames.has(f.name.toLowerCase()))
+      .slice(0, 8);
+  }, [favorites, session.people]);
 
   const handleAddPerson = () => {
     const trimmed = personName.trim();
@@ -54,6 +70,20 @@ export default function People() {
           value={session.restaurantName ?? ''}
           onChange={(e) => setRestaurantName(e.target.value)}
           className="w-full border border-border rounded-[14px] px-4 py-3.5 text-base font-nunito font-medium text-text-primary bg-bg-card placeholder:text-text-muted outline-none focus:border-primary mb-4"
+        />
+
+        {/* Favorite chips */}
+        <FavoriteChips
+          favorites={availableFavorites}
+          onTap={(fav) => {
+            const duplicate = session.people.some(
+              (p) => p.name.toLowerCase() === fav.name.toLowerCase()
+            );
+            if (!duplicate) {
+              addPerson(fav.name, fav.color);
+            }
+          }}
+          onRemove={removeFavorite}
         />
 
         {/* Add person */}

@@ -10,7 +10,7 @@ interface SessionState {
   session: Session;
   resetSession: () => void;
   setRestaurantName: (name: string) => void;
-  addPerson: (name: string) => void;
+  addPerson: (name: string, color?: string) => void;
   removePerson: (personId: string) => void;
   addItem: (item: Omit<Item, 'id'>) => void;
   removeItem: (personId: string, itemId: string) => void;
@@ -41,13 +41,13 @@ export const useSessionStore = create<SessionState>((set) => ({
       session: { ...state.session, restaurantName: name },
     })),
 
-  addPerson: (name) =>
+  addPerson: (name, color?) =>
     set((state) => {
       if (state.session.people.length >= MAX_PEOPLE) return state;
       const newPerson: Person = {
         id: uuidv4(),
         name,
-        color: getAvatarColor(state.session.people.length),
+        color: color ?? getAvatarColor(state.session.people.length),
         items: [],
       };
       return {
