@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #00B894;
   --color-primary-light: #55EFC4;
@@ -26,10 +28,27 @@
   --font-nunito: 'Nunito', sans-serif;
 }
 
+/* Dark theme overrides */
+.dark {
+  --color-bg: #1A1A2E;
+  --color-bg-card: #2D2D44;
+  --color-bg-card-elevated: #3D3D5C;
+  --color-text-primary: #E8E8F0;
+  --color-text-secondary: #A0A0B8;
+  --color-text-muted: #6B6B80;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-separator: rgba(255, 255, 255, 0.06);
+  --color-error-dim: rgba(231, 76, 60, 0.15);
+  --color-success-dim: rgba(0, 184, 148, 0.15);
+  --color-purple-dim: rgba(162, 155, 254, 0.2);
+  --color-primary-dim: rgba(0, 184, 148, 0.18);
+  --color-secondary-dim: rgba(78, 205, 196, 0.18);
+}
+
 body {
   font-family: var(--font-nunito);
-  background-color: #FFF9F5;
-  color: #2D3436;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior: none;
