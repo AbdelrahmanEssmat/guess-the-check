@@ -16,6 +16,7 @@ interface SessionState {
   removeItem: (personId: string, itemId: string) => void;
   setTax: (config: ChargeConfig) => void;
   setService: (config: ChargeConfig) => void;
+  setTip: (config: ChargeConfig) => void;
   setReceiptTotal: (total: number) => void;
 }
 
@@ -26,6 +27,7 @@ function createEmptySession(): Session {
     people: [],
     tax: { type: 'percentage', value: 0 },
     service: { type: 'percentage', value: 0 },
+    tip: { type: 'percentage', value: 0 },
   };
 }
 
@@ -108,6 +110,11 @@ export const useSessionStore = create<SessionState>((set) => ({
   setService: (config) =>
     set((state) => ({
       session: { ...state.session, service: config },
+    })),
+
+  setTip: (config) =>
+    set((state) => ({
+      session: { ...state.session, tip: config },
     })),
 
   setReceiptTotal: (total) =>

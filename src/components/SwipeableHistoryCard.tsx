@@ -22,7 +22,7 @@ export default function SwipeableHistoryCard({
   const deleteOpacity = useTransform(x, [-120, -60, 0], [1, 0.8, 0]);
   const deleteScale = useTransform(x, [-120, -60, 0], [1, 0.9, 0.8]);
 
-  const summaries = calculatePersonSummaries(session.people, session.tax, session.service);
+  const summaries = calculatePersonSummaries(session.people, session.tax, session.service, session.tip ?? { type: 'percentage', value: 0 });
   const total = getGrandTotal(summaries);
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {

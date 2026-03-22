@@ -33,7 +33,8 @@ export default function Summary() {
   const summaries = calculatePersonSummaries(
     session.people,
     session.tax,
-    session.service
+    session.service,
+    session.tip ?? { type: 'percentage', value: 0 }
   );
   const grandTotal = getGrandTotal(summaries);
 

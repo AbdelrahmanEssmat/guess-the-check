@@ -6,7 +6,7 @@ interface PersonCardProps {
 }
 
 export default function PersonCard({ summary }: PersonCardProps) {
-  const { person, subtotal, taxAmount, serviceAmount, total, items } = summary;
+  const { person, subtotal, taxAmount, serviceAmount, tipAmount, total, items } = summary;
 
   return (
     <div className="bg-bg-card rounded-2xl p-5 shadow-sm">
@@ -60,6 +60,12 @@ export default function PersonCard({ summary }: PersonCardProps) {
           <span className="text-sm font-nunito font-medium text-text-muted">Service</span>
           <span className="text-sm font-nunito font-semibold text-text-primary">
             {formatEGP(serviceAmount)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-sm font-nunito font-medium text-text-muted">Tip</span>
+          <span className="text-sm font-nunito font-semibold text-text-primary">
+            {formatEGP(tipAmount)}
           </span>
         </div>
       </div>
