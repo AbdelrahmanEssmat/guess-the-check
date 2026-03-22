@@ -38,21 +38,27 @@ export function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export function formatShareText(
-  session: { restaurantName?: string },
-  summaries: { person: { name: string }; total: number }[],
-  grandTotal: number
+export function formatPersonShareText(
+  summary: { person: { name: string }; subtotal: number; taxAmount: number; serviceAmount: number; tipAmount: number; total: number; items: { name: string; amount: number }[] },
+  restaurantName?: string
 ): string {
-  const header = session.restaurantName
-    ? `🧾 Guess The Check — ${session.restaurantName}`
-    : '🧾 Guess The Check';
+  const header = restaurantName
+    ? `🧾 ${restaurantName} — ${summary.person.name}'s share`
+    : `🧾 ${summary.person.name}'s share`;
 
-  const personLines = summaries
-    .map((s) => `👤 ${s.person.name}: ${formatEGP(s.total)}`)
+  const itemLines = summary.items
+    .map((item) => `  • ${item.name}: ${formatEGP(item.amount)}`)
     .join('\n');
 
-  const separator = '━━━━━━━━━━━━━━━';
-  const totalLine = `💰 Total: ${formatEGP(grandTotal)}`;
+  const charges = [
+    `Subtotal: ${formatEGP(summary.subtotal)}`,
+    summary.taxAmount > 0 ? `Tax: ${formatEGP(summary.taxAmount)}` : '',
+    summary.serviceAmount > 0 ? `Service: ${formatEGP(summary.serviceAmount)}` : '',
+    summary.tipAmount > 0 ? `Tip: ${formatEGP(summary.tipAmount)}` : '',
+  ].filter(Boolean).join('\n');
 
-  return `${header}\n\n${personLines}\n${separator}\n${totalLine}`;
+  const separator = '━━━━━━━━━━━━━━━';
+  const totalLine = `💰 Total: ${formatEGP(summary.total)}`;
+
+  return `${header}\n\n${itemLines}\n\n${charges}\n${separator}\n${totalLine}`;
 }

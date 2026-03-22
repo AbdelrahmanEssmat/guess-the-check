@@ -65,7 +65,7 @@ export default function HistoryDetail() {
 
       <div className="px-6 flex-1 pb-8 flex flex-col gap-4">
         {summaries.map((summary) => (
-          <PersonCard key={summary.person.id} summary={summary} />
+          <PersonCard key={summary.person.id} summary={summary} restaurantName={session.restaurantName} />
         ))}
 
         <div className="bg-primary text-white rounded-2xl p-5 flex flex-row items-center justify-between shadow-sm">
