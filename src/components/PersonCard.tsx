@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import html2canvas from 'html2canvas';
 import { PersonSummary } from '../types';
-import { formatEGP, formatPersonShareText, getInitials } from '../utils/formatting';
-import ShareModal from './ShareModal';
+import { formatEGP, getInitials } from '../utils/formatting';
 
 interface PersonCardProps {
   summary: PersonSummary;
@@ -10,12 +10,54 @@ interface PersonCardProps {
 
 export default function PersonCard({ summary, restaurantName }: PersonCardProps) {
   const { person, subtotal, taxAmount, serviceAmount, tipAmount, total, items } = summary;
-  const [showShare, setShowShare] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [sharing, setSharing] = useState(false);
 
-  const shareText = formatPersonShareText(summary, restaurantName);
+  const handleShare = async () => {
+    if (!cardRef.current || sharing) return;
+    setSharing(true);
+
+    try {
+      // Capture the card as an image
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: '#FFFFFF',
+        scale: 2,
+        useCORS: true,
+      });
+
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, 'image/png')
+      );
+      if (!blob) return;
+
+      const file = new File([blob], `${person.name}-receipt.png`, { type: 'image/png' });
+
+      // Try Web Share API with file
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `${person.name}'s share${restaurantName ? ` — ${restaurantName}` : ''}`,
+        });
+      } else {
+        // Fallback: download the image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${person.name}-receipt.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch {
+      // User cancelled share or error — do nothing
+    } finally {
+      setSharing(false);
+    }
+  };
 
   return (
-    <div className="bg-bg-card rounded-2xl p-5 shadow-sm">
+    <div ref={cardRef} className="bg-bg-card rounded-2xl p-5 shadow-sm">
       {/* Header: Avatar + Name + Share */}
       <div className="flex items-center gap-3 mb-4">
         <div
@@ -30,19 +72,24 @@ export default function PersonCard({ summary, restaurantName }: PersonCardProps)
           {person.name}
         </span>
         <button
-          onClick={() => setShowShare(true)}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text-secondary hover:bg-bg-card-elevated transition-colors"
+          onClick={handleShare}
+          disabled={sharing}
+          className="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text-secondary hover:bg-bg-card-elevated transition-colors disabled:opacity-50"
           aria-label={`Share ${person.name}'s receipt`}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-            <polyline points="16 6 12 2 8 6" />
-            <line x1="12" y1="2" x2="12" y2="15" />
-          </svg>
+          {sharing ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" className="animate-spin text-text-muted">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" strokeDasharray="31.4" strokeDashoffset="10" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+              <polyline points="16 6 12 2 8 6" />
+              <line x1="12" y1="2" x2="12" y2="15" />
+            </svg>
+          )}
         </button>
       </div>
-
-      <ShareModal visible={showShare} onClose={() => setShowShare(false)} shareText={shareText} />
 
       {/* Items list */}
       <div className="flex flex-col">
