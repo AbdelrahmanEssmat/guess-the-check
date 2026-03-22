@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react';
-import html2canvas from 'html2canvas';
+import { useState } from 'react';
 import { PersonSummary } from '../types';
 import { formatEGP, getInitials } from '../utils/formatting';
+import { generateReceiptImage } from '../utils/receiptImage';
 
 interface PersonCardProps {
   summary: PersonSummary;
@@ -10,36 +10,24 @@ interface PersonCardProps {
 
 export default function PersonCard({ summary, restaurantName }: PersonCardProps) {
   const { person, subtotal, taxAmount, serviceAmount, tipAmount, total, items } = summary;
-  const cardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
 
   const handleShare = async () => {
-    if (!cardRef.current || sharing) return;
+    if (sharing) return;
     setSharing(true);
 
     try {
-      // Capture the card as an image
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: '#FFFFFF',
-        scale: 2,
-        useCORS: true,
-      });
-
-      const blob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob(resolve, 'image/png')
-      );
+      const blob = await generateReceiptImage(summary, restaurantName);
       if (!blob) return;
 
       const file = new File([blob], `${person.name}-receipt.png`, { type: 'image/png' });
 
-      // Try Web Share API with file
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
           title: `${person.name}'s share${restaurantName ? ` — ${restaurantName}` : ''}`,
         });
       } else {
-        // Fallback: download the image
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -50,14 +38,14 @@ export default function PersonCard({ summary, restaurantName }: PersonCardProps)
         URL.revokeObjectURL(url);
       }
     } catch {
-      // User cancelled share or error — do nothing
+      // User cancelled share or error
     } finally {
       setSharing(false);
     }
   };
 
   return (
-    <div ref={cardRef} className="bg-bg-card rounded-2xl p-5 shadow-sm">
+    <div className="bg-bg-card rounded-2xl p-5 shadow-sm">
       {/* Header: Avatar + Name + Share */}
       <div className="flex items-center gap-3 mb-4">
         <div
