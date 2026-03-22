@@ -5,18 +5,24 @@ import { useFavoritesStore } from '../store/favoritesStore';
 import ProgressBar from '../components/ProgressBar';
 import PersonChip from '../components/PersonChip';
 import FavoriteChips from '../components/FavoriteChips';
+import QuickSplitInput from '../components/QuickSplitInput';
 
 export default function People() {
   const navigate = useNavigate();
   const {
     session,
+    isQuickSplit,
     setRestaurantName,
     addPerson,
     removePerson,
+    setQuickSplit,
+    clearQuickSplit,
   } = useSessionStore();
 
   const { favorites, loadFavorites, removeFavorite } = useFavoritesStore();
   const [personName, setPersonName] = useState('');
+  const [quickSplitEnabled, setQuickSplitEnabled] = useState(isQuickSplit);
+  const [quickSplitAmount, setQuickSplitAmount] = useState('');
 
   useEffect(() => {
     loadFavorites();
@@ -50,7 +56,30 @@ export default function People() {
     }
   };
 
-  const canContinue = session.people.length >= 2;
+  const handleToggleQuickSplit = () => {
+    if (quickSplitEnabled) {
+      clearQuickSplit();
+      setQuickSplitEnabled(false);
+      setQuickSplitAmount('');
+    } else {
+      setQuickSplitEnabled(true);
+    }
+  };
+
+  const handleNext = () => {
+    if (quickSplitEnabled) {
+      const amount = parseFloat(quickSplitAmount);
+      if (!amount || amount <= 0) return;
+      setQuickSplit(amount);
+      navigate('/split/taxes');
+    } else {
+      navigate('/split/orders');
+    }
+  };
+
+  const canContinue =
+    session.people.length >= 2 &&
+    (!quickSplitEnabled || (!!quickSplitAmount && parseFloat(quickSplitAmount) > 0));
 
   return (
     <div className="min-h-dvh bg-bg flex flex-col font-nunito">
@@ -125,12 +154,48 @@ export default function People() {
             Add at least 2 people to continue
           </p>
         )}
+
+        {/* Quick Split Toggle */}
+        {session.people.length >= 2 && (
+          <div className="mt-5">
+            <button
+              onClick={handleToggleQuickSplit}
+              className={`w-full flex items-center justify-between rounded-[14px] px-4 py-3.5 border transition-colors ${
+                quickSplitEnabled
+                  ? 'border-primary bg-primary/10'
+                  : 'border-border bg-bg-card'
+              }`}
+            >
+              <span className={`font-semibold text-base ${quickSplitEnabled ? 'text-primary' : 'text-text-secondary'}`}>
+                Split equally
+              </span>
+              <div
+                className={`w-11 h-6 rounded-full relative transition-colors ${
+                  quickSplitEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+              >
+                <div
+                  className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                    quickSplitEnabled ? 'translate-x-[22px]' : 'translate-x-0.5'
+                  }`}
+                />
+              </div>
+            </button>
+
+            {quickSplitEnabled && (
+              <QuickSplitInput
+                value={quickSplitAmount}
+                onChange={setQuickSplitAmount}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Bottom bar */}
       <div className="px-6 pb-6 pt-3">
         <button
-          onClick={() => navigate('/split/orders')}
+          onClick={handleNext}
           disabled={!canContinue}
           className={`w-full bg-primary text-white font-bold rounded-[18px] py-4 text-lg text-center transition-opacity ${
             !canContinue ? 'opacity-40' : ''

@@ -8,6 +8,7 @@ const MAX_ITEMS_PER_PERSON = 200;
 
 interface SessionState {
   session: Session;
+  isQuickSplit: boolean;
   resetSession: () => void;
   setRestaurantName: (name: string) => void;
   addPerson: (name: string, color?: string) => void;
@@ -18,6 +19,8 @@ interface SessionState {
   setService: (config: ChargeConfig) => void;
   setTip: (config: ChargeConfig) => void;
   setReceiptTotal: (total: number) => void;
+  setQuickSplit: (total: number) => void;
+  clearQuickSplit: () => void;
 }
 
 function createEmptySession(): Session {
@@ -33,8 +36,9 @@ function createEmptySession(): Session {
 
 export const useSessionStore = create<SessionState>((set) => ({
   session: createEmptySession(),
+  isQuickSplit: false,
 
-  resetSession: () => set({ session: createEmptySession() }),
+  resetSession: () => set({ session: createEmptySession(), isQuickSplit: false }),
 
   setRestaurantName: (name) =>
     set((state) => ({
@@ -121,4 +125,35 @@ export const useSessionStore = create<SessionState>((set) => ({
     set((state) => ({
       session: { ...state.session, receiptTotal: total },
     })),
+
+  setQuickSplit: (total) =>
+    set((state) => {
+      const allPersonIds = state.session.people.map((p) => p.id);
+      const equalSplitItem: Item = {
+        id: uuidv4(),
+        name: 'Equal Split',
+        price: total,
+        splitBetween: allPersonIds,
+      };
+      const updatedPeople = state.session.people.map((person) => ({
+        ...person,
+        items: [equalSplitItem],
+      }));
+      return {
+        isQuickSplit: true,
+        session: { ...state.session, people: updatedPeople },
+      };
+    }),
+
+  clearQuickSplit: () =>
+    set((state) => {
+      const updatedPeople = state.session.people.map((person) => ({
+        ...person,
+        items: person.items.filter((item) => item.name !== 'Equal Split'),
+      }));
+      return {
+        isQuickSplit: false,
+        session: { ...state.session, people: updatedPeople },
+      };
+    }),
 }));
