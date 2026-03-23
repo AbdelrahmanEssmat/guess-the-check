@@ -13,26 +13,10 @@ function ThemeApplier() {
 
   useEffect(() => {
     const root = document.documentElement;
-
-    function applyTheme() {
-      if (mode === 'dark') {
-        root.classList.add('dark');
-      } else if (mode === 'light') {
-        root.classList.remove('dark');
-      } else {
-        // system
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        root.classList.toggle('dark', prefersDark);
-      }
-    }
-
-    applyTheme();
-
-    if (mode === 'system') {
-      const mq = window.matchMedia('(prefers-color-scheme: dark)');
-      const handler = () => applyTheme();
-      mq.addEventListener('change', handler);
-      return () => mq.removeEventListener('change', handler);
+    if (mode === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
     }
   }, [mode]);
 

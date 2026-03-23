@@ -1,19 +1,18 @@
 import { create } from 'zustand';
 
-type ThemeMode = 'system' | 'light' | 'dark';
+type ThemeMode = 'light' | 'dark';
 
 const STORAGE_KEY = 'guess-the-check-theme';
 
 interface ThemeState {
   mode: ThemeMode;
-  setMode: (mode: ThemeMode) => void;
-  cycleMode: () => void;
+  toggleMode: () => void;
 }
 
 function getStoredMode(): ThemeMode {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark' || stored === 'system') {
+    if (stored === 'light' || stored === 'dark') {
       return stored;
     }
   } catch {
@@ -25,23 +24,9 @@ function getStoredMode(): ThemeMode {
 export const useThemeStore = create<ThemeState>((set) => ({
   mode: getStoredMode(),
 
-  setMode: (mode) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, mode);
-    } catch {
-      // localStorage unavailable
-    }
-    set({ mode });
-  },
-
-  cycleMode: () =>
+  toggleMode: () =>
     set((state) => {
-      const next: ThemeMode =
-        state.mode === 'system'
-          ? 'light'
-          : state.mode === 'light'
-            ? 'dark'
-            : 'system';
+      const next: ThemeMode = state.mode === 'light' ? 'dark' : 'light';
       try {
         localStorage.setItem(STORAGE_KEY, next);
       } catch {
